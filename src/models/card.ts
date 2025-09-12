@@ -11,18 +11,18 @@ export interface ICard {
 const cardSchema = new mongoose.Schema<ICard>({
   name: {
     type: String,
-    required: true,
+    required: [true, 'name не может быть пустым'],
     minlength: 2,
     maxlength: 30,
   },
   link: {
     type: String,
-    required: true,
+    required: [true, 'link не может быть пустым'],
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
-    required: true,
+    required: [true, 'owner не может быть пустым'],
   },
   likes:
     {
@@ -32,10 +32,12 @@ const cardSchema = new mongoose.Schema<ICard>({
       }],
       default: [],
     },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
+  // createdAt: {
+  //   type: Date,
+  //   default: Date.now,
+  // },
+}, {
+  timestamps: true, // Автоматические createdAt/updatedAt
 });
 
 export default mongoose.model<ICard>('card', cardSchema);

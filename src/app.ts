@@ -1,11 +1,16 @@
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
-import path from 'path';
+import { AppError } from './utils/errors';
+import serverError from './middlewares/error';
+import router from './routes';
 
 require('dotenv').config();
 
 const { PORT = 3000 } = process.env;
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 
 async function start() {
   try {
@@ -16,11 +21,9 @@ async function start() {
   }
 }
 
-// Для разных запросов разные роутеры.
+app.use('/', router);
 
-// app.use('/', router);
-// app.use('/api', api);
-// app.use('/admin', backoffice);
-app.use(express.static(path.join(__dirname, 'public')));
+// eslint-disable-next-line max-len
+app.use((err: AppError, req: Request, res: Response, next: NextFunction) => serverError(err, req, res, next));
 
 start();
