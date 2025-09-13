@@ -2,7 +2,8 @@ import express, { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import serverError from './middlewares/errors';
 import router from './routes';
-import { AppError, createInitializationError } from './utils/errors';
+import { createInitializationError } from './utils/errors';
+import { AppError } from './types/errors';
 
 require('dotenv').config();
 

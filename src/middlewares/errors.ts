@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { SERVER_ERROR } from '../utils/constants';
-import { AppError } from '../utils/errors';
+import { AppError } from '../types/errors';
 
 const serverError = (err: AppError, req: Request, res: Response, next: NextFunction) => {
   const { statusCode = 500, message } = err;

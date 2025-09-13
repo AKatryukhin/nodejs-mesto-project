@@ -1,13 +1,5 @@
 import mongoose from 'mongoose';
-
-export interface AppError extends Error {
-  statusCode?: number;
-  status?: number;
-  message: string;
-  name: string;
-  stack?: string;
-}
-export type AppErrorType = 'notFound' | 'validation' | 'unauthorized' | 'duplicate' | 'server' | 'initialization';
+import { AppError, AppErrorType } from '../types/errors';
 
 export const isMongoServerError = (error: unknown): error is mongoose.mongo.MongoServerError => error instanceof Error && error.name === 'MongoError' && 'code' in error;
 
