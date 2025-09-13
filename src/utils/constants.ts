@@ -1,7 +1,11 @@
-export const NOT_FOUND_DATA_CARD_ERROR = 'Карточка с указанным id не найден';
-export const NOT_FOUND_DATA_USER_ERROR = 'Пользователь с указанным id не найден';
-export const VALIDATION_DATA_ERROR = 'Переданы некорректные данные';
+export const NOT_FOUND_CARD_DATA_ERROR = 'Карточка с указанным id не найдена';
+export const NOT_FOUND_USER_DATA_ERROR = 'Пользователь с указанным id не найден';
+export const VALIDATION_USER_DATA_ERROR = 'Переданы некорректные данные при создании пользователя';
+export const VALIDATION_USER_PROFILE_DATA_ERROR = 'Переданы некорректные данные при обновлении профиля';
+export const VALIDATION_USER_AVATAR_DATA_ERROR = 'Переданы некорректные данные при обновлении аватара';
+export const VALIDATION_CARD_DATA_ERROR = 'Переданы некорректные данные при создании карточки';
 export const SERVER_ERROR = 'На сервере произошла ошибка';
 export const DUPLICATE_USER_ERROR = 'Пользователь с указанным параметром уже существует: ';
 export const DUPLICATE_CARD_ERROR = 'Карточка с указанным параметром уже существует: ';
 export const INCORRECT_DATA_ERROR = 'Неверный формат данных';
+export const INCORRECT_LIKE_DATA_ERROR = 'Переданы некорректные данные для установки лайка';

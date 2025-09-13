@@ -1,8 +1,8 @@
 import express, { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
-import { AppError } from './utils/errors';
-import serverError from './middlewares/error';
+import serverError from './middlewares/errors';
 import router from './routes';
+import { AppError, createInitializationError } from './utils/errors';
 
 require('dotenv').config();
 
@@ -11,19 +11,31 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
 async function start() {
   try {
     app.listen(+PORT);
     await mongoose.connect('mongodb://localhost:27017/mestodb');
   } catch (error) {
-    throw new Error(`Init application error: ${error}`);
+    throw createInitializationError(`Ошибка при инициализации приложения: ${error}`);
   }
 }
 
+// временное решение
+app.use((req: Request, res: Response, next: NextFunction) => {
+  req.user = {
+    _id: '68c440719c2403f9fe55f197',
+  };
+
+  next();
+});
+
 app.use('/', router);
 
-// eslint-disable-next-line max-len
-app.use((err: AppError, req: Request, res: Response, next: NextFunction) => serverError(err, req, res, next));
+app.use((
+  err: AppError,
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => serverError(err, req, res, next));
 
 start();

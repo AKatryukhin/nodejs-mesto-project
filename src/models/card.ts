@@ -38,6 +38,7 @@ const cardSchema = new mongoose.Schema<ICard>({
   // },
 }, {
   timestamps: true, // Автоматические createdAt/updatedAt
+  versionKey: false,
 });
 
 export default mongoose.model<ICard>('card', cardSchema);
