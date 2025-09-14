@@ -1,29 +1,99 @@
-import mongoose from 'mongoose';
+import mongoose, { Error } from 'mongoose';
+import isEmail from 'validator/lib/isEmail';
+import bcrypt from 'bcryptjs';
+import { createServerError, createUnauthorizedError } from '../utils/errors';
+import { INCORRECT_AUTH_DATA_ERROR, SERVER_ERROR } from '../utils/constants';
 
 export interface IUser {
   name: string;
   about: string;
   avatar: string;
+  email: string;
+  password: string;
 }
 
-const userSchema = new mongoose.Schema<IUser>({
+export interface IUserPublic {
+  _id: mongoose.Types.ObjectId;
+  name: string;
+  about: string;
+  avatar: string;
+  email: string;
+}
+
+interface UserModel extends mongoose.Model<IUser> {
+  findUserByCredentials: (
+    email: string,
+    password: string
+  ) => Promise<IUserPublic>
+}
+
+const userSchema = new mongoose.Schema<IUser, UserModel>({
   name: {
     type: String,
-    required: [true, 'name не может быть пустым'],
-    default: 'Саша',
+    default: 'Жак-Ив Кусто',
     minlength: 2,
     maxlength: 30,
   },
   about: {
     type: String,
-    required: [true, 'about не может быть пустым'],
+    default: 'Исследователь',
     minlength: 2,
     maxlength: 200,
   },
   avatar: {
     type: String,
-    required: [true, 'ссылка avatar не может быть пустым'],
+    default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+  },
+  email: {
+    type: String,
+    required: [true, 'email не может быть пустым'],
+    unique: true,
+    validate: [isEmail, 'Неправильный формат почты'],
+  },
+  password: {
+    type: String,
+    required: [true, 'password не может быть пустым'],
+    minlength: 8,
+    select: false,
   },
 }, { versionKey: false });
 
-export default mongoose.model<IUser>('user', userSchema);
+userSchema.pre('save', async function preSave(next) {
+  // Если пароль не менялся и документ не новый - пропускаем
+  if (!this.isModified('password') && !this.isNew) {
+    return next();
+  }
+
+  try {
+    // Хешируем пароль
+    this.password = await bcrypt.hash(this.password, 12);
+    return next();
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return next(error);
+    }
+    return next(createServerError(SERVER_ERROR));
+  }
+});
+
+userSchema.static('findUserByCredentials', async function findUserByCredentials(
+  email: string,
+  password: string,
+) {
+  try {
+    const user = await this.findOne({ email })
+      .select('+password name about avatar email _id')
+      .lean()
+      .orFail(createUnauthorizedError(INCORRECT_AUTH_DATA_ERROR));
+
+    const matched = await bcrypt.compare(password, user.password);
+    if (!matched) {
+      createUnauthorizedError(INCORRECT_AUTH_DATA_ERROR);
+    }
+    return user;
+  } catch (error) {
+    return createUnauthorizedError(INCORRECT_AUTH_DATA_ERROR);
+  }
+});
+
+export default mongoose.model<IUser, UserModel>('user', userSchema);

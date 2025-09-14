@@ -1,5 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
+import cookieParser from 'cookie-parser';
 import serverError from './middlewares/errors';
 import router from './routes';
 import { createInitializationError } from './utils/errors';
@@ -11,6 +12,7 @@ const { PORT = 3000 } = process.env;
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 async function start() {
   try {
@@ -20,15 +22,6 @@ async function start() {
     throw createInitializationError(`Ошибка при инициализации приложения: ${error}`);
   }
 }
-
-// временное решение
-app.use((req: Request, res: Response, next: NextFunction) => {
-  req.user = {
-    _id: '68c440719c2403f9fe55f197',
-  };
-
-  next();
-});
 
 app.use('/', router);
 

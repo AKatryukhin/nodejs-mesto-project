@@ -9,6 +9,9 @@ export const DUPLICATE_USER_ERROR = 'Пользователь с указанн�
 export const DUPLICATE_CARD_ERROR = 'Карточка с указанным параметром уже существует: ';
 export const INCORRECT_DATA_ERROR = 'Неверный формат данных';
 export const INCORRECT_LIKE_DATA_ERROR = 'Переданы некорректные данные для установки лайка';
+export const INCORRECT_AUTH_DATA_ERROR = 'Переданы неправильные почта или пароль';
+export const UNAUTHORIZED_ERROR = 'Необходима авторизация';
+export const DEV_JWT_SECRET = 'dev-secret';
 
 export const HTTP_STATUS = {
   OK: 200,

@@ -1,11 +1,17 @@
 import { Router } from 'express';
-import routerUsers from './users';
+import usersRouter from './users';
 import cardsRouter from './cards';
+import { createUser, login } from '../controllers/users';
+import auth from '../middlewares/auth';
 
 const router = Router();
 
-router.use('/users', routerUsers);
+router.post('/signin', login);
 
-router.use('/cards', cardsRouter);
+router.post('/signup', createUser);
+
+router.use('/users', auth, usersRouter);
+
+router.use('/cards', auth, cardsRouter);
 
 export default router;

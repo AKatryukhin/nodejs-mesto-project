@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
-import User from '../models/user';
+import jwt from 'jsonwebtoken';
+import User, { IUserPublic } from '../models/user';
 import {
   createDuplicateError,
   createNotFoundError,
@@ -14,14 +15,48 @@ import {
   VALIDATION_USER_AVATAR_DATA_ERROR,
   VALIDATION_USER_DATA_ERROR,
   VALIDATION_USER_PROFILE_DATA_ERROR,
-  HTTP_STATUS,
+  HTTP_STATUS, DEV_JWT_SECRET,
 } from '../utils/constants';
+
+require('dotenv').config();
+
+const { JWT_SECRET = DEV_JWT_SECRET } = process.env;
+
+export const login = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findUserByCredentials(email, password);
+    const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
+    res
+      .cookie(
+        'jwt',
+        token,
+        {
+          maxAge: 3600000 * 24 * 7,
+          httpOnly: true,
+          sameSite: true,
+        },
+      )
+      .json({
+        _id: user._id,
+        email: user.email,
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        // Оставляю в проекте также вариант использования с авторизацией без cookies
+        // в этом случае отправляю token для использование в заголовке authorization
+        // token,
+      });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const users = await User
       .find({})
-      .select('name about avatar _id')
+      .select('name about avatar email _id')
       .lean();
 
     res.json({ users });
@@ -33,7 +68,20 @@ export const getUsers = async (req: Request, res: Response, next: NextFunction) 
 export const getUserById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = await User.findById(req.params.userId)
-      .select('name about avatar _id')
+      .select('name about avatar email _id')
+      .lean()
+      .orFail(createNotFoundError(NOT_FOUND_USER_DATA_ERROR));
+
+    res.json({ user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getUserProfile = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = await User.findOne({ _id: req.user._id })
+      .select('name about avatar email _id')
       .lean()
       .orFail(createNotFoundError(NOT_FOUND_USER_DATA_ERROR));
 
@@ -45,10 +93,20 @@ export const getUserById = async (req: Request, res: Response, next: NextFunctio
 
 export const createUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { name, about, avatar } = req.body;
-    const user = await User.create({ name, about, avatar });
+    const {
+      name, about, avatar, email, password,
+    } = req.body;
+    const user = await User.create({
+      name, about, avatar, email, password,
+    });
 
-    res.status(HTTP_STATUS.Created).json({ user });
+    res.status(HTTP_STATUS.Created).json({
+      _id: user._id,
+      email: user.email,
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
+    });
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
       createValidationError(VALIDATION_USER_DATA_ERROR);
@@ -62,7 +120,12 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
   }
 };
 
-export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
+export const updateUser = async (
+  req: Request,
+  res: Response<unknown,
+    IUserPublic>,
+  next: NextFunction,
+) => {
   try {
     const { name, about } = req.body;
     const user = await User.findByIdAndUpdate(
@@ -73,7 +136,7 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
         runValidators: true,
       },
     )
-      .select('name about avatar _id')
+      .select('name about avatar email _id')
       .lean()
       .orFail(createNotFoundError(NOT_FOUND_USER_DATA_ERROR));
 
@@ -99,7 +162,7 @@ export const updateAvatar = async (req: Request, res: Response, next: NextFuncti
         runValidators: true,
       },
     )
-      .select('name about avatar _id')
+      .select('name about avatar email _id')
       .lean()
       .orFail(createNotFoundError(NOT_FOUND_USER_DATA_ERROR));
 
