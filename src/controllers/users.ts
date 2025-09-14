@@ -14,6 +14,7 @@ import {
   VALIDATION_USER_AVATAR_DATA_ERROR,
   VALIDATION_USER_DATA_ERROR,
   VALIDATION_USER_PROFILE_DATA_ERROR,
+  HTTP_STATUS,
 } from '../utils/constants';
 
 export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
@@ -47,7 +48,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
     const { name, about, avatar } = req.body;
     const user = await User.create({ name, about, avatar });
 
-    res.status(201).json({ user });
+    res.status(HTTP_STATUS.Created).json({ user });
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
       createValidationError(VALIDATION_USER_DATA_ERROR);

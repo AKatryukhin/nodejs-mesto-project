@@ -13,6 +13,7 @@ import {
   INCORRECT_LIKE_DATA_ERROR,
   NOT_FOUND_CARD_DATA_ERROR,
   VALIDATION_CARD_DATA_ERROR,
+  HTTP_STATUS,
 } from '../utils/constants';
 
 export const getCards = async (req: Request, res: Response, next: NextFunction) => {
@@ -39,7 +40,7 @@ export const createCard = async (req: Request, res: Response, next: NextFunction
     const owner = req.user._id;
     const card = await Card.create({ name, link, owner });
 
-    res.status(201).json({ card });
+    res.status(HTTP_STATUS.Created).json({ card });
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
       createValidationError(VALIDATION_CARD_DATA_ERROR);

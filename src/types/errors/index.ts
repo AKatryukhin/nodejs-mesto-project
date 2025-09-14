@@ -1,5 +1,7 @@
+import { HttpStatusCode } from '../http-status';
+
 export interface AppError extends Error {
-  statusCode?: number;
+  statusCode?: HttpStatusCode;
   status?: number;
   message: string;
   name: string;

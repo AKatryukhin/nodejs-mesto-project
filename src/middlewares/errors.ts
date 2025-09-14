@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
-import { SERVER_ERROR } from '../utils/constants';
+import { HTTP_STATUS, SERVER_ERROR } from '../utils/constants';
 import { AppError } from '../types/errors';
 
 const serverError = (err: AppError, req: Request, res: Response, next: NextFunction) => {
-  const { statusCode = 500, message } = err;
+  const { statusCode = HTTP_STATUS.InternalServerError, message } = err;
   res
     .status(statusCode)
     .send({
-      message: statusCode === 500
+      message: statusCode === HTTP_STATUS.InternalServerError
         ? SERVER_ERROR
         : message,
     });

@@ -9,3 +9,14 @@ export const DUPLICATE_USER_ERROR = 'Пользователь с указанн�
 export const DUPLICATE_CARD_ERROR = 'Карточка с указанным параметром уже существует: ';
 export const INCORRECT_DATA_ERROR = 'Неверный формат данных';
 export const INCORRECT_LIKE_DATA_ERROR = 'Переданы некорректные данные для установки лайка';
+
+export const HTTP_STATUS = {
+  OK: 200,
+  Created: 201,
+  BadRequest: 400,
+  Unauthorized: 401,
+  Forbidden: 403,
+  NotFound: 404,
+  Conflict: 409,
+  InternalServerError: 500,
+} as const;

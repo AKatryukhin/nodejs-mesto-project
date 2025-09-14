@@ -1,16 +1,18 @@
 import mongoose from 'mongoose';
 import { AppError, AppErrorType } from '../types/errors';
+import { HTTP_STATUS } from './constants';
+import { HttpStatusCode } from '../types/http-status';
 
 export const isMongoServerError = (error: unknown): error is mongoose.mongo.MongoServerError => error instanceof Error && error.name === 'MongoError' && 'code' in error;
 
 export const createAppError = (type: AppErrorType, message: string): AppError => {
-  const errorTypes: Record<AppErrorType, { statusCode: number; name: string }> = {
-    notFound: { statusCode: 404, name: 'NotFoundError' },
-    validation: { statusCode: 400, name: 'ValidationError' },
-    unauthorized: { statusCode: 401, name: 'UnauthorizedError' },
-    duplicate: { statusCode: 409, name: 'DuplicateError' },
-    server: { statusCode: 500, name: 'ServerError' },
-    initialization: { statusCode: 500, name: 'InitializationError' },
+  const errorTypes: Record<AppErrorType, { statusCode: HttpStatusCode; name: string }> = {
+    notFound: { statusCode: HTTP_STATUS.NotFound, name: 'NotFoundError' },
+    validation: { statusCode: HTTP_STATUS.BadRequest, name: 'ValidationError' },
+    unauthorized: { statusCode: HTTP_STATUS.Unauthorized, name: 'UnauthorizedError' },
+    duplicate: { statusCode: HTTP_STATUS.Conflict, name: 'DuplicateError' },
+    server: { statusCode: HTTP_STATUS.InternalServerError, name: 'ServerError' },
+    initialization: { statusCode: HTTP_STATUS.InternalServerError, name: 'InitializationError' },
   };
 
   const errorConfig = errorTypes[type];

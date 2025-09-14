@@ -14,8 +14,8 @@ app.use(express.urlencoded({ extended: true }));
 
 async function start() {
   try {
-    app.listen(+PORT);
     await mongoose.connect('mongodb://localhost:27017/mestodb');
+    app.listen(+PORT);
   } catch (error) {
     throw createInitializationError(`Ошибка при инициализации приложения: ${error}`);
   }
