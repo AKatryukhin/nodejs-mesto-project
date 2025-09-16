@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import Card from '../models/card';
 import {
-  createDuplicateError,
+  createDuplicateError, createForbiddenError,
   createNotFoundError,
   createValidationError,
   isMongoServerError,
@@ -13,7 +13,7 @@ import {
   INCORRECT_LIKE_DATA_ERROR,
   NOT_FOUND_CARD_DATA_ERROR,
   VALIDATION_CARD_DATA_ERROR,
-  HTTP_STATUS,
+  HTTP_STATUS, COPYRIGHT_ERROR,
 } from '../utils/constants';
 
 export const getCards = async (req: Request, res: Response, next: NextFunction) => {
@@ -56,11 +56,15 @@ export const createCard = async (req: Request, res: Response, next: NextFunction
 
 export const removeCard = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const { _id } = req.user;
+
     const card = await Card.findById(req.params.cardId)
       .select('name link owner likes _id createdAt updatedAt')
       .lean()
       .orFail(createNotFoundError(NOT_FOUND_CARD_DATA_ERROR));
-
+    if (_id !== card.owner) {
+      createForbiddenError(COPYRIGHT_ERROR);
+    }
     await Card.deleteOne({ _id: card._id });
 
     res.json({ card });

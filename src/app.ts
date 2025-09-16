@@ -5,6 +5,7 @@ import serverError from './middlewares/errors';
 import router from './routes';
 import { createInitializationError } from './utils/errors';
 import { AppError } from './types/errors';
+import { logger, errorLogger } from './middlewares/logger';
 
 require('dotenv').config();
 
@@ -22,8 +23,10 @@ async function start() {
     throw createInitializationError(`Ошибка при инициализации приложения: ${error}`);
   }
 }
-
+app.use(logger);
 app.use('/', router);
+
+app.use(errorLogger);
 
 app.use((
   err: AppError,

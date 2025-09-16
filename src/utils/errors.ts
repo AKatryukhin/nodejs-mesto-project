@@ -13,6 +13,7 @@ export const createAppError = (type: AppErrorType, message: string): AppError =>
     duplicate: { statusCode: HTTP_STATUS.Conflict, name: 'DuplicateError' },
     server: { statusCode: HTTP_STATUS.InternalServerError, name: 'ServerError' },
     initialization: { statusCode: HTTP_STATUS.InternalServerError, name: 'InitializationError' },
+    forbidden: { statusCode: HTTP_STATUS.Forbidden, name: 'ForbiddenError' },
   };
 
   const errorConfig = errorTypes[type];
@@ -31,3 +32,4 @@ export const createDuplicateError = (message: string) => createAppError('duplica
 export const createUnauthorizedError = (message: string) => createAppError('unauthorized', message);
 export const createServerError = (message: string) => createAppError('server', message);
 export const createInitializationError = (message: string) => createAppError('initialization', message);
+export const createForbiddenError = (message: string) => createAppError('forbidden', message);

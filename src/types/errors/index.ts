@@ -7,4 +7,4 @@ export interface AppError extends Error {
   name: string;
   stack?: string;
 }
-export type AppErrorType = 'notFound' | 'validation' | 'unauthorized' | 'duplicate' | 'server' | 'initialization';
+export type AppErrorType = 'notFound' | 'validation' | 'unauthorized' | 'duplicate' | 'server' | 'initialization' | 'forbidden';
