@@ -2,7 +2,8 @@ import { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import Card from '../models/card';
 import {
-  createDuplicateError, createForbiddenError,
+  createDuplicateError,
+  createForbiddenError,
   createNotFoundError,
   createValidationError,
   isMongoServerError,
@@ -43,12 +44,12 @@ export const createCard = async (req: Request, res: Response, next: NextFunction
     res.status(HTTP_STATUS.Created).json({ card });
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
-      createValidationError(VALIDATION_CARD_DATA_ERROR);
+      throw createValidationError(VALIDATION_CARD_DATA_ERROR);
     } else if (error instanceof mongoose.Error.CastError) {
-      createValidationError(INCORRECT_DATA_ERROR);
+      throw createValidationError(INCORRECT_DATA_ERROR);
     } else if (isMongoServerError(error) && error.code === 11000) {
       const field = Object.keys(error.keyValue || {})[0];
-      createDuplicateError(`${DUPLICATE_CARD_ERROR} ${field}`);
+      throw createDuplicateError(`${DUPLICATE_CARD_ERROR} ${field}`);
     }
     next(error);
   }
@@ -63,7 +64,7 @@ export const removeCard = async (req: Request, res: Response, next: NextFunction
       .lean()
       .orFail(createNotFoundError(NOT_FOUND_CARD_DATA_ERROR));
     if (_id !== card.owner) {
-      createForbiddenError(COPYRIGHT_ERROR);
+      next(createForbiddenError(COPYRIGHT_ERROR));
     }
     await Card.deleteOne({ _id: card._id });
 
@@ -87,9 +88,9 @@ export const likeCard = async (req: Request, res: Response, next: NextFunction) 
     res.json({ card });
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
-      createValidationError(INCORRECT_LIKE_DATA_ERROR);
+      throw createValidationError(INCORRECT_LIKE_DATA_ERROR);
     } else if (error instanceof mongoose.Error.CastError) {
-      createValidationError(INCORRECT_DATA_ERROR);
+      throw createValidationError(INCORRECT_DATA_ERROR);
     }
     next(error);
   }
@@ -109,9 +110,9 @@ export const dislikeCard = async (req: Request, res: Response, next: NextFunctio
     res.json({ card });
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
-      createValidationError(INCORRECT_LIKE_DATA_ERROR);
+      throw createValidationError(INCORRECT_LIKE_DATA_ERROR);
     } else if (error instanceof mongoose.Error.CastError) {
-      createValidationError(INCORRECT_DATA_ERROR);
+      throw createValidationError(INCORRECT_DATA_ERROR);
     }
     next(error);
   }

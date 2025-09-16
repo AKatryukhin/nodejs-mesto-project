@@ -109,12 +109,12 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
     });
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
-      createValidationError(VALIDATION_USER_DATA_ERROR);
+      throw createValidationError(VALIDATION_USER_DATA_ERROR);
     } else if (error instanceof mongoose.Error.CastError) {
-      createValidationError(INCORRECT_DATA_ERROR);
+      throw createValidationError(INCORRECT_DATA_ERROR);
     } else if (isMongoServerError(error) && error.code === 11000) {
       const field = Object.keys(error.keyValue || {})[0];
-      createDuplicateError(`${DUPLICATE_USER_ERROR} ${field}`);
+      throw createDuplicateError(`${DUPLICATE_USER_ERROR} ${field}`);
     }
     next(error);
   }
@@ -143,9 +143,9 @@ export const updateUser = async (
     res.json({ user });
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
-      createValidationError(VALIDATION_USER_PROFILE_DATA_ERROR);
+      throw createValidationError(VALIDATION_USER_PROFILE_DATA_ERROR);
     } else if (error instanceof mongoose.Error.CastError) {
-      createValidationError(INCORRECT_DATA_ERROR);
+      throw createValidationError(INCORRECT_DATA_ERROR);
     }
     next(error);
   }
@@ -169,9 +169,9 @@ export const updateAvatar = async (req: Request, res: Response, next: NextFuncti
     res.json({ user });
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
-      createValidationError(VALIDATION_USER_AVATAR_DATA_ERROR);
+      throw createValidationError(VALIDATION_USER_AVATAR_DATA_ERROR);
     } else if (error instanceof mongoose.Error.CastError) {
-      createValidationError(INCORRECT_DATA_ERROR);
+      throw createValidationError(INCORRECT_DATA_ERROR);
     }
     next(error);
   }

@@ -3,6 +3,7 @@ import isEmail from 'validator/lib/isEmail';
 import bcrypt from 'bcryptjs';
 import { createServerError, createUnauthorizedError } from '../utils/errors';
 import { INCORRECT_AUTH_DATA_ERROR, SERVER_ERROR } from '../utils/constants';
+import { urlValidator } from '../utils/validators';
 
 export interface IUser {
   name: string;
@@ -43,6 +44,10 @@ const userSchema = new mongoose.Schema<IUser, UserModel>({
   avatar: {
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    validate: {
+      validator: urlValidator,
+      message: 'Неправильный формат ссылки на аватар',
+    },
   },
   email: {
     type: String,
@@ -80,20 +85,17 @@ userSchema.static('findUserByCredentials', async function findUserByCredentials(
   email: string,
   password: string,
 ) {
-  try {
-    const user = await this.findOne({ email })
-      .select('+password name about avatar email _id')
-      .lean()
-      .orFail(createUnauthorizedError(INCORRECT_AUTH_DATA_ERROR));
+  const user = await this.findOne({ email })
+    .select('+password name about avatar email _id')
+    .lean()
+    .orFail(() => createUnauthorizedError(INCORRECT_AUTH_DATA_ERROR));
 
-    const matched = await bcrypt.compare(password, user.password);
-    if (!matched) {
-      createUnauthorizedError(INCORRECT_AUTH_DATA_ERROR);
-    }
-    return user;
-  } catch (error) {
-    return createUnauthorizedError(INCORRECT_AUTH_DATA_ERROR);
+  const matched = await bcrypt.compare(password, user.password);
+  if (!matched) {
+    throw createUnauthorizedError(INCORRECT_AUTH_DATA_ERROR);
   }
+
+  return user;
 });
 
 export default mongoose.model<IUser, UserModel>('user', userSchema);

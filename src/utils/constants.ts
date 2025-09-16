@@ -10,8 +10,10 @@ export const DUPLICATE_CARD_ERROR = 'Карточка с указанным па
 export const INCORRECT_DATA_ERROR = 'Неверный формат данных';
 export const INCORRECT_LIKE_DATA_ERROR = 'Переданы некорректные данные для установки лайка';
 export const INCORRECT_AUTH_DATA_ERROR = 'Переданы неправильные почта или пароль';
+export const INCORRECT_URL_ERROR = 'Передана некорректная ссылка';
 export const COPYRIGHT_ERROR = 'Недостаточно прав для удаления карточки';
 export const DEV_JWT_SECRET = 'dev-secret';
+export const URL_REGEX = /^https?:\/\/(www\.)?[^/?#]+\.[^/?#]+([^#]*)#?$/;
 
 export const HTTP_STATUS = {
   OK: 200,

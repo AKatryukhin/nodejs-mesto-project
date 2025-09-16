@@ -3,7 +3,7 @@ import { AppError, AppErrorType } from '../types/errors';
 import { HTTP_STATUS } from './constants';
 import { HttpStatusCode } from '../types/http-status';
 
-export const isMongoServerError = (error: unknown): error is mongoose.mongo.MongoServerError => error instanceof Error && error.name === 'MongoError' && 'code' in error;
+export const isMongoServerError = (error: unknown): error is mongoose.mongo.MongoServerError => error instanceof Error && error.name === 'MongoServerError' && 'code' in error;
 
 export const createAppError = (type: AppErrorType, message: string): AppError => {
   const errorTypes: Record<AppErrorType, { statusCode: HttpStatusCode; name: string }> = {

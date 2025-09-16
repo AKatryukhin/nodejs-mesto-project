@@ -1,14 +1,29 @@
 import { Router } from 'express';
+import { celebrate, Joi } from 'celebrate';
 import usersRouter from './users';
 import cardsRouter from './cards';
 import { createUser, login } from '../controllers/users';
 import auth from '../middlewares/auth';
+import { urlJoiValidator } from '../utils/validators';
 
 const router = Router();
 
-router.post('/signin', login);
+router.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(8),
+  }),
+}), login);
 
-router.post('/signup', createUser);
+router.post('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(8),
+    name: Joi.string().min(2).max(30),
+    avatar: Joi.string().required().custom(urlJoiValidator),
+    about: Joi.string().min(2).max(200),
+  }).unknown(true),
+}), createUser);
 
 router.use('/users', auth, usersRouter);
 

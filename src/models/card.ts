@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { urlValidator } from '../utils/validators';
 
 export interface ICard {
   name: string;
@@ -18,6 +19,10 @@ const cardSchema = new mongoose.Schema<ICard>({
   link: {
     type: String,
     required: [true, 'link не может быть пустым'],
+    validate: {
+      validator: urlValidator,
+      message: 'Неправильный формат ссылки на изображение',
+    },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
