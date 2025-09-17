@@ -9,6 +9,7 @@ import router from './routes';
 import { createInitializationError } from './utils/errors';
 import { AppError } from './types/errors';
 import { logger, errorLogger } from './middlewares/logger';
+import { MONGO_DB_MESTO_URL } from './utils/constants';
 
 require('dotenv').config();
 
@@ -17,7 +18,7 @@ const limiter = rateLimit({
   limit: 100, // можно совершить максимум 100 запросов с одного IP
 });
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3000, NODE_ENV, BASE_URL } = process.env;
 const app = express();
 app.use(limiter);
 app.use(express.json());
@@ -27,7 +28,8 @@ app.use(helmet());
 
 async function start() {
   try {
-    await mongoose.connect('mongodb://localhost:27017/mestodb');
+    const mongoUrl = NODE_ENV === 'production' && BASE_URL ? BASE_URL : MONGO_DB_MESTO_URL;
+    await mongoose.connect(mongoUrl);
     app.listen(+PORT);
   } catch (error) {
     throw createInitializationError(`Ошибка при инициализации приложения: ${error}`);

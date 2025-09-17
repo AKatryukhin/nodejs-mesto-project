@@ -21,10 +21,11 @@ export const getCards = async (req: Request, res: Response, next: NextFunction) 
   try {
     const cards = await Card
       .find({})
-      .select('name link owner likes _id createdAt')
       .populate({
         path: 'owner',
-        select: 'name about avatar _id', // Только нужные поля
+        options: {
+          projection: { _id: 1 }, // Только нужные поля
+        },
       })
       .sort({ createdAt: -1 })
       .lean();
@@ -44,12 +45,12 @@ export const createCard = async (req: Request, res: Response, next: NextFunction
     res.status(HTTP_STATUS.Created).json({ card });
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
-      throw createValidationError(VALIDATION_CARD_DATA_ERROR);
+      next(createValidationError(VALIDATION_CARD_DATA_ERROR));
     } else if (error instanceof mongoose.Error.CastError) {
-      throw createValidationError(INCORRECT_DATA_ERROR);
+      next(createValidationError(INCORRECT_DATA_ERROR));
     } else if (isMongoServerError(error) && error.code === 11000) {
       const field = Object.keys(error.keyValue || {})[0];
-      throw createDuplicateError(`${DUPLICATE_CARD_ERROR} ${field}`);
+      next(createDuplicateError(`${DUPLICATE_CARD_ERROR} ${field}`));
     }
     next(error);
   }
@@ -88,9 +89,9 @@ export const likeCard = async (req: Request, res: Response, next: NextFunction) 
     res.json({ card });
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
-      throw createValidationError(INCORRECT_LIKE_DATA_ERROR);
+      next(createValidationError(INCORRECT_LIKE_DATA_ERROR));
     } else if (error instanceof mongoose.Error.CastError) {
-      throw createValidationError(INCORRECT_DATA_ERROR);
+      next(createValidationError(INCORRECT_DATA_ERROR));
     }
     next(error);
   }
@@ -110,9 +111,9 @@ export const dislikeCard = async (req: Request, res: Response, next: NextFunctio
     res.json({ card });
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
-      throw createValidationError(INCORRECT_LIKE_DATA_ERROR);
+      next(createValidationError(INCORRECT_LIKE_DATA_ERROR));
     } else if (error instanceof mongoose.Error.CastError) {
-      throw createValidationError(INCORRECT_DATA_ERROR);
+      next(createValidationError(INCORRECT_DATA_ERROR));
     }
     next(error);
   }

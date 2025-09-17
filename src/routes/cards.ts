@@ -11,6 +11,10 @@ import { urlJoiValidator } from '../utils/validators';
 
 const router = Router();
 
+const cardIdValidator = Joi.object().keys({
+  cardId: Joi.string().length(24).hex(),
+});
+
 router.get('/', getCards);
 
 router.post('/', celebrate({
@@ -21,21 +25,15 @@ router.post('/', celebrate({
 }), createCard);
 
 router.delete('/:cardId', celebrate({
-  params: Joi.object().keys({
-    cardId: Joi.string().alphanum().length(24),
-  }),
+  params: cardIdValidator,
 }), removeCard);
 
 router.put('/:cardId/likes', celebrate({
-  params: Joi.object().keys({
-    cardId: Joi.string().alphanum().length(24),
-  }),
+  params: cardIdValidator,
 }), likeCard);
 
 router.delete('/:cardId/likes', celebrate({
-  params: Joi.object().keys({
-    cardId: Joi.string().alphanum().length(24),
-  }),
+  params: cardIdValidator,
 }), dislikeCard);
 
 export default router;

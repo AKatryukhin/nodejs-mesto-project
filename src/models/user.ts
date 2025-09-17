@@ -23,7 +23,12 @@ export interface IUserPublic {
 
 interface UserModel extends mongoose.Model<IUser> {
   findUserByCredentials: (
+    // Код корректен, это ложное срабатывание ESLint, т.к. аргументы используются в теле функции.
+    // Возможно причина в устаревшей версии eslint. Но требуемый eslint-config-airbnb-base
+    // работает максимум с версией "eslint": "8.57.1"
+    // eslint-disable-next-line no-unused-vars
     email: string,
+    // eslint-disable-next-line no-unused-vars
     password: string
   ) => Promise<IUserPublic>
 }

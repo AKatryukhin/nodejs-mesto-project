@@ -1,3 +1,5 @@
+export const MONGO_DB_MESTO_URL = 'mongodb://localhost:27017/mestodb';
+export const NOT_FOUND_PAGE_ERROR = 'Страница не найдена';
 export const NOT_FOUND_CARD_DATA_ERROR = 'Карточка с указанным id не найдена';
 export const NOT_FOUND_USER_DATA_ERROR = 'Пользователь с указанным id не найден';
 export const VALIDATION_USER_DATA_ERROR = 'Переданы некорректные данные при создании пользователя';

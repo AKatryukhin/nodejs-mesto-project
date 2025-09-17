@@ -43,6 +43,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         name: user.name,
         about: user.about,
         avatar: user.avatar,
+        password, // отправляем не зашифрованный пароль
         // Оставляю в проекте также вариант использования с авторизацией без cookies
         // в этом случае отправляю token для использование в заголовке authorization
         // token,
@@ -106,15 +107,16 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
       name: user.name,
       about: user.about,
       avatar: user.avatar,
+      password, // отправляем не зашифрованный пароль
     });
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
-      throw createValidationError(VALIDATION_USER_DATA_ERROR);
+      next(createValidationError(VALIDATION_USER_DATA_ERROR));
     } else if (error instanceof mongoose.Error.CastError) {
-      throw createValidationError(INCORRECT_DATA_ERROR);
+      next(createValidationError(INCORRECT_DATA_ERROR));
     } else if (isMongoServerError(error) && error.code === 11000) {
       const field = Object.keys(error.keyValue || {})[0];
-      throw createDuplicateError(`${DUPLICATE_USER_ERROR} ${field}`);
+      next(createDuplicateError(`${DUPLICATE_USER_ERROR} ${field}`));
     }
     next(error);
   }
@@ -143,9 +145,9 @@ export const updateUser = async (
     res.json({ user });
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
-      throw createValidationError(VALIDATION_USER_PROFILE_DATA_ERROR);
+      next(createValidationError(VALIDATION_USER_PROFILE_DATA_ERROR));
     } else if (error instanceof mongoose.Error.CastError) {
-      throw createValidationError(INCORRECT_DATA_ERROR);
+      next(createValidationError(INCORRECT_DATA_ERROR));
     }
     next(error);
   }
@@ -169,9 +171,9 @@ export const updateAvatar = async (req: Request, res: Response, next: NextFuncti
     res.json({ user });
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
-      throw createValidationError(VALIDATION_USER_AVATAR_DATA_ERROR);
+      next(createValidationError(VALIDATION_USER_AVATAR_DATA_ERROR));
     } else if (error instanceof mongoose.Error.CastError) {
-      throw createValidationError(INCORRECT_DATA_ERROR);
+      next(createValidationError(INCORRECT_DATA_ERROR));
     }
     next(error);
   }

@@ -9,11 +9,6 @@ const { NODE_ENV = 'development', JWT_SECRET = DEV_JWT_SECRET } = process.env;
 
 const auth = (req: Request, res: Response, next: NextFunction) => {
   let token;
-  try {
-    token = req.cookies.jwt;
-  } catch (err) {
-    next(createUnauthorizedError(INCORRECT_AUTH_DATA_ERROR));
-  }
   // Оставляю в проекте вариант использования с авторизацией без cookies
   // const { authorization } = req.headers;
   //
@@ -30,6 +25,7 @@ const auth = (req: Request, res: Response, next: NextFunction) => {
   let payload;
 
   try {
+    token = req.cookies.jwt;
     payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : DEV_JWT_SECRET);
   } catch (err) {
     next(createUnauthorizedError(INCORRECT_AUTH_DATA_ERROR));
