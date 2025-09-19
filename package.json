@@ -8,7 +8,7 @@
     "build": "tsc",
     "dev": "ts-node-dev src/app.ts",
     "start": "ts-node src/app.ts",
-    "debug": "node --inspect dist/app.js"
+    "debug": "ts-node-dev --inspect -- src/app.ts"
   },
   "author": "Katryukhin Alexandr",
   "license": "ISC",
