@@ -20,13 +20,13 @@ import {
 
 require('dotenv').config();
 
-const { JWT_SECRET = DEV_JWT_SECRET } = process.env;
+const { NODE_ENV = 'development', JWT_SECRET = DEV_JWT_SECRET } = process.env;
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
     const user = await User.findUserByCredentials(email, password);
-    const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : DEV_JWT_SECRET, { expiresIn: '7d' });
     res
       .cookie(
         'jwt',
@@ -57,6 +57,7 @@ export const getUsers = async (req: Request, res: Response, next: NextFunction) 
   try {
     const users = await User
       .find({})
+      .limit(100)
       .select('name about avatar email _id')
       .lean();
 

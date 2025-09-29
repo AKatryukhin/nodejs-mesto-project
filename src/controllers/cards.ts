@@ -27,9 +27,10 @@ export const getCards = async (req: Request, res: Response, next: NextFunction) 
           projection: { _id: 1 }, // Только нужные поля
         },
       })
+      .limit(100)
       .sort({ createdAt: -1 })
       .lean();
-
+    console.log(req.headers['user-agent']);
     res.json({ cards });
   } catch (error) {
     next(error);
