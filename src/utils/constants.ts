@@ -27,3 +27,11 @@ export const HTTP_STATUS = {
   Conflict: 409,
   InternalServerError: 500,
 } as const;
+
+export const ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS';
+export const ALLOWED_HEADERS = ['Content-Type', 'Authorization', 'Origin', 'Accept'];
+export const ALLOWED_CORS = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://localhost:3005',
+];

@@ -10,6 +10,7 @@ import { createInitializationError } from './utils/errors';
 import { AppError } from './types/errors';
 import { logger, errorLogger } from './middlewares/logger';
 import { MONGO_DB_MESTO_URL } from './utils/constants';
+import corsMiddleware from './middlewares/cors';
 
 require('dotenv').config();
 
@@ -35,6 +36,7 @@ async function start() {
     throw createInitializationError(`Ошибка при инициализации приложения: ${error}`);
   }
 }
+app.use(corsMiddleware);
 app.use(logger);
 app.use('/', router);
 
