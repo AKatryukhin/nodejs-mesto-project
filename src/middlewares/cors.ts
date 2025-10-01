@@ -5,9 +5,7 @@ const corsOptions = {
   // eslint-disable-next-line no-unused-vars,consistent-return
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     // Разрешаем запросы без origin (например, от мобильных приложений, Postman)
-    if (!origin) return callback(null, true);
-
-    if (ALLOWED_CORS.includes(origin)) {
+    if (!origin || ALLOWED_CORS.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));

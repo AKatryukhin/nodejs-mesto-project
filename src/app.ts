@@ -11,6 +11,7 @@ import { AppError } from './types/errors';
 import { logger, errorLogger } from './middlewares/logger';
 import { MONGO_DB_MESTO_URL } from './utils/constants';
 import corsMiddleware from './middlewares/cors';
+import securityMiddleware from './middlewares/authSecurity';
 
 require('dotenv').config();
 
@@ -37,6 +38,7 @@ async function start() {
   }
 }
 app.use(corsMiddleware);
+app.use(securityMiddleware);
 app.use(logger);
 app.use('/', router);
 

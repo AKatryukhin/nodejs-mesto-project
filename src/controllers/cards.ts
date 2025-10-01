@@ -30,7 +30,6 @@ export const getCards = async (req: Request, res: Response, next: NextFunction) 
       .limit(100)
       .sort({ createdAt: -1 })
       .lean();
-    console.log(req.headers['user-agent']);
     res.json({ cards });
   } catch (error) {
     next(error);

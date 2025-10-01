@@ -8,30 +8,41 @@ require('dotenv').config();
 const { NODE_ENV = 'development', JWT_SECRET = DEV_JWT_SECRET } = process.env;
 
 const auth = (req: Request, res: Response, next: NextFunction) => {
-  let token;
-  // Оставляю в проекте вариант использования с авторизацией без cookies
-  // const { authorization } = req.headers;
-  //
-  // // убеждаемся, что он есть или начинается с Bearer
-  // if (!authorization || !authorization.startsWith('Bearer ')) {
-  //   createUnauthorizedError(UNAUTHORIZED_ERROR);
-  //   return;
-  // }
-  // const token = authorization.replace('Bearer ', '');
-  // if (!token) {
-  //   createUnauthorizedError(INCORRECT_AUTH_DATA_ERROR);
-  //   return;
-  // }
+  let token: string | undefined;
+
+  // Пробуем получить токен из cookies (для браузерных запросов)
+  if (req.cookies?.jwt) {
+    token = req.cookies.jwt;
+  } else if (req.headers?.authorization) {
+    // Если нет токена в cookies, пробуем получить из заголовка Authorization
+    const { authorization } = req.headers;
+
+    // Проверяем, что заголовок начинается с 'Bearer '
+    if (!authorization.startsWith('Bearer ')) {
+      next(createUnauthorizedError(INCORRECT_AUTH_DATA_ERROR));
+      return;
+    }
+
+    token = authorization.replace('Bearer ', '');
+  }
+
+  // Если токен не найден ни в cookies, ни в заголовке
+  if (!token) {
+    next(createUnauthorizedError(INCORRECT_AUTH_DATA_ERROR));
+    return;
+  }
+
   let payload;
 
   try {
-    token = req.cookies.jwt;
+    // Верифицируем токен
     payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : DEV_JWT_SECRET);
   } catch (err) {
     next(createUnauthorizedError(INCORRECT_AUTH_DATA_ERROR));
+    return;
   }
-  // если не использовать глобальный index.d.ts, то можно добавить таким способом
-  // res.locals.user = payload;
+
+  // Добавляем payload в запрос
   req.user = payload as { _id: string };
   next();
 };

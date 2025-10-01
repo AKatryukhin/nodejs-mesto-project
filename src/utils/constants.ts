@@ -12,8 +12,9 @@ export const DUPLICATE_CARD_ERROR = 'Карточка с указанным па
 export const INCORRECT_DATA_ERROR = 'Неверный формат данных';
 export const INCORRECT_LIKE_DATA_ERROR = 'Переданы некорректные данные для установки лайка';
 export const INCORRECT_AUTH_DATA_ERROR = 'Переданы неправильные почта или пароль';
+export const REQUIRED_AUTH_DATA_ERROR = 'Для не браузерных запросов требуется API key или Authorization token';
 export const INCORRECT_URL_ERROR = 'Передана некорректная ссылка';
-export const COPYRIGHT_ERROR = 'Недостаточно прав для удаления карточки';
+export const COPYRIGHT_ERROR = 'Недостаточно прав';
 export const DEV_JWT_SECRET = 'dev-secret';
 export const URL_REGEX = /^https?:\/\/(www\.)?[^/?#]+\.[^/?#]+([^#]*)#?$/;
 
@@ -29,7 +30,7 @@ export const HTTP_STATUS = {
 } as const;
 
 export const ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS';
-export const ALLOWED_HEADERS = ['Content-Type', 'Authorization', 'Origin', 'Accept'];
+export const ALLOWED_HEADERS = ['Content-Type', 'Authorization', 'Origin', 'Accept', 'x-api-key'];
 export const ALLOWED_CORS = [
   'http://localhost:3000',
   'http://localhost:3001',
