@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
 import { errors } from 'celebrate';
+import dotenv from 'dotenv';
 import serverError from './middlewares/errors';
 import router from './routes';
 import { createInitializationError } from './utils/errors';
@@ -13,7 +14,7 @@ import { MONGO_DB_MESTO_URL } from './utils/constants';
 import corsMiddleware from './middlewares/cors';
 import securityMiddleware from './middlewares/authSecurity';
 
-require('dotenv').config();
+dotenv.config({ path: ['.env.local', '.env'] });
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // за 15 минут
