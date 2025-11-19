@@ -35,4 +35,6 @@ export const ALLOWED_CORS = [
   'http://localhost:3000',
   'http://localhost:3001',
   'http://localhost:3005',
+  'https://nodejs.cohort22.mesto.nomorepartiessbs.ru',
+  'http://nodejs.cohort22.mesto.nomorepartiessbs.ru',
 ];
