@@ -24,6 +24,7 @@ const limiter = rateLimit({
 const { PORT = 3000, NODE_ENV, BASE_URL } = process.env;
 const app = express();
 app.use(corsMiddleware);
+app.options('*', corsMiddleware);
 app.use(limiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
