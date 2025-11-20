@@ -1,33 +1,20 @@
-import { Request, Response, NextFunction } from 'express';
+import cors from 'cors';
 import { ALLOWED_CORS, ALLOWED_HEADERS, ALLOWED_METHODS } from '../utils/constants';
 
-const corsMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  const { origin } = req.headers;
-  const { method } = req;
-
-  // Обрабатываем OPTIONS запрос (preflight)
-  if (method === 'OPTIONS') {
-    const requestHeaders = req.headers['access-control-request-headers'];
-
-    res.header('Access-Control-Allow-Methods', ALLOWED_METHODS);
-    res.header('Access-Control-Allow-Headers', requestHeaders || ALLOWED_HEADERS.join(', '));
-    res.header('Access-Control-Max-Age', '86400'); // Кешируем preflight на 24 часа
-    res.status(200).send();
-    return;
-  }
-
-  // Проверяем origin для всех запросов
-  if (origin) {
-    if (ALLOWED_CORS.includes(origin)) {
-      res.header('Access-Control-Allow-Origin', origin);
+const corsOptions = {
+  // eslint-disable-next-line no-unused-vars,consistent-return
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    // Разрешаем запросы без origin (например, от мобильных приложений, Postman)
+    if (!origin || ALLOWED_CORS.includes(origin)) {
+      callback(null, true);
     } else {
-      res.status(403).json({ error: 'CORS not allowed' });
+      callback(new Error('Not allowed by CORS'));
     }
-  }
-
-  res.header('Access-Control-Allow-Credentials', 'true');
-
-  next();
+  },
+  credentials: true,
+  optionsSuccessStatus: 200,
+  methods: ALLOWED_METHODS,
+  allowedHeaders: ALLOWED_HEADERS,
 };
 
-export default corsMiddleware;
+export default cors(corsOptions);
